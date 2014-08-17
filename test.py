@@ -1,5 +1,6 @@
 from kivy.app import App
 from kivy.uix.widget import Widget
+from kivy.uix.image import Image
 from kivy.properties import NumericProperty, ReferenceListProperty,\
     ObjectProperty
 from kivy.vector import Vector
@@ -16,12 +17,16 @@ class PongPaddle(Widget):
             bounced = Vector(-1 * vx, vy)
             vel = bounced * 1.1
             ball.velocity = vel.x, vel.y + offset
+            ball.face = ball.face + 1
+            ball.source = 'face{}.png'.format(ball.face % 6)
+            ball.reload()
 
 
-class PongBall(Widget):
+class PongBall(Image):
     velocity_x = NumericProperty(0)
     velocity_y = NumericProperty(0)
     velocity = ReferenceListProperty(velocity_x, velocity_y)
+    face = 0
 
     def move(self):
         self.pos = Vector(*self.velocity) + self.pos
@@ -35,6 +40,7 @@ class PongGame(Widget):
     def serve_ball(self, vel=(4, 0)):
         self.ball.center = self.center
         self.ball.velocity = vel
+        self.ball.source = 'face{}.png'.format(self.ball.face % 6)
 
     def update(self, dt):
         self.ball.move()
